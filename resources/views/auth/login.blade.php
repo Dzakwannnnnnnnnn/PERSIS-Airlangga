@@ -104,11 +104,66 @@
 
 <script>
     const cardInput = document.getElementById('card_code');
+    const tapLoginForm = document.getElementById('tap-login-form');
+
+    let scanBuffer = '';
+    let lastScanKeyAt = 0;
+    let scanResetTimer = null;
+
+    function resetScanBuffer() {
+        scanBuffer = '';
+        if (scanResetTimer) {
+            clearTimeout(scanResetTimer);
+            scanResetTimer = null;
+        }
+    }
+
+    function queueScanBufferReset() {
+        if (scanResetTimer) {
+            clearTimeout(scanResetTimer);
+        }
+
+        scanResetTimer = setTimeout(resetScanBuffer, 150);
+    }
+
+    function submitCardLoginFromScan(code) {
+        if (!cardInput || !tapLoginForm) return;
+        const finalCode = (code || '').trim();
+        if (!finalCode) return;
+
+        cardInput.value = finalCode;
+        tapLoginForm.submit();
+    }
+
     if (cardInput) {
         cardInput.addEventListener('keydown', function(event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
-                document.getElementById('tap-login-form').submit();
+                submitCardLoginFromScan(cardInput.value);
+            }
+        });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.ctrlKey || event.altKey || event.metaKey) return;
+
+            const now = Date.now();
+            if (now - lastScanKeyAt > 120) {
+                resetScanBuffer();
+            }
+            lastScanKeyAt = now;
+
+            if (event.key === 'Enter') {
+                if (scanBuffer.length >= 4) {
+                    event.preventDefault();
+                    submitCardLoginFromScan(scanBuffer);
+                }
+                resetScanBuffer();
+                return;
+            }
+
+            if (event.key.length === 1) {
+                scanBuffer += event.key;
+                queueScanBufferReset();
             }
         });
     }

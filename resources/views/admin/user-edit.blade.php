@@ -50,7 +50,12 @@
               <label class="block mb-2 text-sm font-semibold text-gray-700">Kelas</label>
               @php
                 $selectedKelas = old('kelas', $user->kelas);
-                $kelasOptions = ['X', 'XI', 'XII'];
+                $kelasOptions = [
+                  'X PPLG', 'XI PPLG', 'XII PPLG',
+                  'X MPLB', 'XI MPLB', 'XII MPLB',
+                  'X DKV', 'XI DKV', 'XII DKV',
+                  'X TJKT', 'XI TJKT', 'XII TJKT',
+                ];
               @endphp
               <select name="kelas"
                 class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-blue-100">

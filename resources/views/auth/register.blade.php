@@ -80,11 +80,20 @@
                     <div>
                         <label
                             class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider ml-3 mb-1">Kelas</label>
+                        @php
+                            $selectedKelas = old('kelas');
+                            $kelasOptions = [
+                                'X PPLG', 'XI PPLG', 'XII PPLG',
+                                'X MPLB', 'XI MPLB', 'XII MPLB',
+                                'X DKV', 'XI DKV', 'XII DKV',
+                                'X TJKT', 'XI TJKT', 'XII TJKT',
+                            ];
+                        @endphp
                         <select name="kelas" class="auth-input appearance-none cursor-pointer">
                             <option value="">Pilih Kelas</option>
-                            <option value="X">Kelas X</option>
-                            <option value="XI">Kelas XI</option>
-                            <option value="XII">Kelas XII</option>
+                            @foreach($kelasOptions as $kelas)
+                                <option value="{{ $kelas }}" {{ $selectedKelas === $kelas ? 'selected' : '' }}>{{ $kelas }}</option>
+                            @endforeach
                         </select>
                     </div>
                 </div>

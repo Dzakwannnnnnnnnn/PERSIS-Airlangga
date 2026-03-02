@@ -71,23 +71,15 @@ class IzinApprovalController extends Controller
     {
         $request->validate([
             'aksi' => ['required', 'in:terima,tolak'],
-            'paraf_guru' => ['nullable', 'accepted'],
-            'nama_guru_validator' => ['nullable', 'string', 'max:255'],
         ]);
 
         if ($request->aksi === 'terima') {
-            if (!$request->boolean('paraf_guru')) {
-                return back()->withErrors([
-                    'paraf_guru' => 'Paraf guru wajib dicentang jika izin diterima.',
-                ]);
-            }
+            $request->validate([
+                'paraf_guru' => ['required', 'accepted'],
+                'nama_guru_validator' => ['required', 'string', 'max:255'],
+            ]);
 
             $namaGuruValidator = trim((string) $request->nama_guru_validator);
-            if ($namaGuruValidator === '') {
-                return back()->withInput()->withErrors([
-                    'nama_guru_validator' => 'Nama lengkap guru wajib diisi saat paraf validasi.',
-                ]);
-            }
 
             $izin->update([
                 'status' => 'diterima',

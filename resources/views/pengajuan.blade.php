@@ -154,10 +154,30 @@
     const nisnInput = document.getElementById('nisn');
     const namaInput = document.getElementById('nama');
     const kelasInput = document.getElementById('kelas');
+    let scanBuffer = '';
+    let lastScanKeyAt = 0;
+    let scanResetTimer = null;
 
-    async function lookupCardAndFill() {
-      const code = (cardInput.value || '').trim();
+    function resetScanBuffer() {
+      scanBuffer = '';
+      if (scanResetTimer) {
+        clearTimeout(scanResetTimer);
+        scanResetTimer = null;
+      }
+    }
+
+    function queueScanBufferReset() {
+      if (scanResetTimer) {
+        clearTimeout(scanResetTimer);
+      }
+
+      scanResetTimer = setTimeout(resetScanBuffer, 150);
+    }
+
+    async function lookupCardAndFill(rawCode = null) {
+      const code = ((rawCode ?? cardInput.value) || '').trim();
       if (!code) return;
+      cardInput.value = code;
 
       tapHint.textContent = 'Membaca data kartu...';
       tapHint.className = 'mt-2 text-xs text-blue-700';
@@ -205,6 +225,30 @@
       if (event.key === 'Enter') {
         event.preventDefault();
         lookupCardAndFill();
+      }
+    });
+
+    document.addEventListener('keydown', function(event) {
+      if (event.ctrlKey || event.altKey || event.metaKey) return;
+
+      const now = Date.now();
+      if (now - lastScanKeyAt > 120) {
+        resetScanBuffer();
+      }
+      lastScanKeyAt = now;
+
+      if (event.key === 'Enter') {
+        if (scanBuffer.length >= 4) {
+          event.preventDefault();
+          lookupCardAndFill(scanBuffer);
+        }
+        resetScanBuffer();
+        return;
+      }
+
+      if (event.key.length === 1) {
+        scanBuffer += event.key;
+        queueScanBufferReset();
       }
     });
   </script>

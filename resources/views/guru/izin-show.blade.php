@@ -104,7 +104,7 @@
       <div class="mt-4 flex flex-wrap gap-2">
         <button id="btnTerima" type="submit" name="aksi" value="terima" disabled
           class="rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40">Terima</button>
-        <button type="submit" name="aksi" value="tolak"
+        <button type="submit" name="aksi" value="tolak" formnovalidate
           class="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700">Tolak</button>
       </div>
       <p class="mt-2 text-xs text-gray-500">Tombol Terima aktif setelah paraf dicentang. Tombol Tolak tetap aktif tanpa
