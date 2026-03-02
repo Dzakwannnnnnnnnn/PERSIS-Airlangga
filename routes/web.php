@@ -57,6 +57,7 @@ Route::middleware(['auth', 'guru'])->prefix('guru')->name('guru.')->group(functi
     Route::get('/pengajuan', [IzinApprovalController::class, 'index'])->name('izin.index');
     Route::get('/pengajuan/{izin}', [IzinApprovalController::class, 'show'])->name('izin.show');
     Route::patch('/pengajuan/{izin}', [IzinApprovalController::class, 'update'])->name('izin.update');
+    Route::get('/pengajuan/{izin}/download-pdf', [IzinApprovalController::class, 'downloadPdf'])->name('izin.download-pdf');
 });
 
 // 7. PROFILE ROUTES

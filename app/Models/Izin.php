@@ -20,6 +20,7 @@ class Izin extends Model
         'bukti_foto',
         'paraf_siswa',
         'paraf_guru',
+        'nama_guru_validator',
         'status',
     ];
 

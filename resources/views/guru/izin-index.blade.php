@@ -107,6 +107,11 @@
               <td class="px-4 py-3">
                 @if($izin->status === 'pending')
                   <a href="{{ route('guru.izin.show', $izin->id) }}" class="inline-flex rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700">Detail & Validasi</a>
+                @elseif($izin->status === 'diterima')
+                  <div class="flex flex-wrap gap-2">
+                    <a href="{{ route('guru.izin.show', $izin->id) }}" class="inline-flex rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50">Detail</a>
+                    <a href="{{ route('guru.izin.download-pdf', $izin->id) }}" class="inline-flex rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700">Download PDF</a>
+                  </div>
                 @else
                   <a href="{{ route('guru.izin.show', $izin->id) }}" class="inline-flex rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50">Detail</a>
                 @endif

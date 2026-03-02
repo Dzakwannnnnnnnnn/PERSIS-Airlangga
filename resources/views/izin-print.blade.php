@@ -57,6 +57,7 @@
         <div class="divider"></div>
 
         <div class="small">Disetujui guru pada: {{ $izin->updated_at?->format('d/m/Y H:i') }}</div>
+        <div class="small">Nama Guru Validator: {{ $izin->nama_guru_validator ?? '-' }}</div>
         <div class="small">Paraf Siswa: {{ $izin->paraf_siswa ? 'YA' : 'TIDAK' }}</div>
         <div class="small">Paraf Guru: {{ $izin->paraf_guru ? 'YA' : 'TIDAK' }}</div>
 
