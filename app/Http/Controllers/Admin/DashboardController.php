@@ -6,11 +6,27 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
+    private const KELAS_OPTIONS = [
+        'X PPLG',
+        'XI PPLG',
+        'XII PPLG',
+        'X MPLB',
+        'XI MPLB',
+        'XII MPLB',
+        'X DKV',
+        'XI DKV',
+        'XII DKV',
+        'X TJKT',
+        'XI TJKT',
+        'XII TJKT',
+    ];
+
     /**
      * Menampilkan halaman utama admin (Daftar Siswa & Guru)
      */
@@ -143,6 +159,77 @@ class DashboardController extends Controller
         abort_unless(strtolower((string) auth()->user()->role) === 'admin', 403);
 
         return view('admin.user-edit', compact('user'));
+    }
+
+    public function create(): View
+    {
+        abort_unless(strtolower((string) auth()->user()->role) === 'admin', 403);
+
+        return view('admin.user-create', [
+            'kelasOptions' => self::KELAS_OPTIONS,
+            'hasCardUid' => Schema::hasColumn('users', 'card_uid'),
+            'hasNip' => Schema::hasColumn('users', 'nip'),
+        ]);
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        abort_unless(strtolower((string) auth()->user()->role) === 'admin', 403);
+
+        $rules = [
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'phone' => ['required', 'string', 'max:20'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'role' => ['required', 'in:siswa,guru'],
+            'is_verified' => ['nullable', 'in:0,1'],
+        ];
+
+        $role = strtolower((string) $request->input('role'));
+        $hasCardUid = Schema::hasColumn('users', 'card_uid');
+        $hasNip = Schema::hasColumn('users', 'nip');
+
+        if ($role === 'siswa') {
+            $rules['nisn'] = ['required', 'digits:10', 'unique:users,nisn'];
+            $rules['kelas'] = ['required', 'in:' . implode(',', self::KELAS_OPTIONS)];
+            if ($hasCardUid) {
+                $rules['card_uid'] = ['required', 'string', 'max:100', 'unique:users,card_uid'];
+            }
+        }
+
+        if ($role === 'guru' && $hasNip) {
+            $rules['nip'] = ['required', 'numeric', 'unique:users,nip'];
+        }
+
+        $validated = $request->validate($rules);
+        $isVerified = $request->input('is_verified', '1') === '1';
+
+        $payload = [
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'],
+            'password' => Hash::make($validated['password']),
+            'role' => $role,
+            'is_verified' => $isVerified,
+            'nisn' => $role === 'siswa' ? $validated['nisn'] : null,
+            'kelas' => $role === 'siswa' ? $validated['kelas'] : null,
+        ];
+
+        if ($hasNip) {
+            $payload['nip'] = $role === 'guru' ? ($validated['nip'] ?? null) : null;
+        }
+
+        if ($hasCardUid) {
+            $payload['card_uid'] = $role === 'siswa'
+                ? trim((string) ($validated['card_uid'] ?? ''))
+                : null;
+        }
+
+        User::create($payload);
+
+        return redirect()
+            ->route('admin.dashboard')
+            ->with('success', 'Akun user baru berhasil ditambahkan.');
     }
 
     public function update(Request $request, User $user): RedirectResponse

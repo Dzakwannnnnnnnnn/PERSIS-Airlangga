@@ -23,6 +23,8 @@ require __DIR__ . '/auth.php';
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
     Route::post('/verify/{id}', [AdminDashboard::class, 'verify'])->name('verify');
+    Route::get('/users/create', [AdminDashboard::class, 'create'])->name('users.create');
+    Route::post('/users', [AdminDashboard::class, 'store'])->name('users.store');
     Route::get('/users/bulk-verify', function () {
         return redirect()->route('admin.dashboard')->with('error', 'Gunakan aksi "Verifikasi Instan (Selected)" dari dashboard admin.');
     });
@@ -55,6 +57,7 @@ Route::middleware(['auth'])->group(function () {
 // 6. GROUP GURU
 Route::middleware(['auth', 'guru'])->prefix('guru')->name('guru.')->group(function () {
     Route::get('/pengajuan', [IzinApprovalController::class, 'index'])->name('izin.index');
+    Route::get('/pengajuan/export', [IzinApprovalController::class, 'export'])->name('izin.export');
     Route::get('/pengajuan/{izin}', [IzinApprovalController::class, 'show'])->name('izin.show');
     Route::patch('/pengajuan/{izin}', [IzinApprovalController::class, 'update'])->name('izin.update');
     Route::get('/pengajuan/{izin}/download-pdf', [IzinApprovalController::class, 'downloadPdf'])->name('izin.download-pdf');

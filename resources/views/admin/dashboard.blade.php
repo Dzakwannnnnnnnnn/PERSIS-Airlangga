@@ -10,7 +10,10 @@
         <h1 class="text-4xl font-bold text-gray-900 tracking-tight">Manajemen Pengguna</h1>
         <p class="text-gray-500 mt-2 text-lg">Verifikasi, cari, sortir, edit, dan hapus akun user.</p>
       </div>
-      <div class="flex gap-3">
+      <div class="flex flex-wrap items-center gap-3">
+        <a href="{{ route('admin.users.create') }}" class="rounded-2xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700">
+          + Tambah User
+        </a>
         <div class="bg-white px-6 py-3 rounded-2xl shadow-sm border border-gray-100 text-center">
           <span class="block text-2xl font-bold text-blue-600">{{ $counts['pending'] }}</span>
           <span class="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Menunggu</span>

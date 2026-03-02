@@ -28,14 +28,30 @@
   @endif
 
   <div class="ios-card p-6 mb-5">
-    <form method="GET" action="{{ route('guru.izin.index') }}" class="grid grid-cols-1 md:grid-cols-6 gap-3">
+    <form method="GET" action="{{ route('guru.izin.index') }}" class="grid grid-cols-1 md:grid-cols-8 gap-3">
       <div class="md:col-span-2">
         <input
           type="text"
           name="q"
           value="{{ request('q') }}"
-          placeholder="Cari nama / kelas / jenis izin"
+          placeholder="Cari nama / jenis izin"
           class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-100">
+      </div>
+      <div>
+        <select name="kelas" class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-100">
+          <option value="">Semua Kelas</option>
+          @foreach($kelasOptions as $kelas)
+            <option value="{{ $kelas }}" {{ request('kelas') === $kelas ? 'selected' : '' }}>{{ $kelas }}</option>
+          @endforeach
+        </select>
+      </div>
+      <div>
+        <select name="periode" class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-100">
+          <option value="">Semua Periode</option>
+          <option value="mingguan" {{ request('periode') === 'mingguan' ? 'selected' : '' }}>Per Minggu</option>
+          <option value="bulanan" {{ request('periode') === 'bulanan' ? 'selected' : '' }}>Per Bulan</option>
+          <option value="tahunan" {{ request('periode') === 'tahunan' ? 'selected' : '' }}>Per Tahun</option>
+        </select>
       </div>
       <div>
         <select name="status" class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-100">
@@ -57,9 +73,20 @@
           <option value="oldest" {{ request('sort') === 'oldest' ? 'selected' : '' }}>Tanggal Terlama</option>
         </select>
       </div>
-      <div class="md:col-span-6 flex gap-2">
+      <div class="md:col-span-8 flex gap-2">
         <button type="submit" class="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">Terapkan</button>
         <a href="{{ route('guru.izin.index') }}" class="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50">Reset</a>
+      </div>
+      <div class="md:col-span-8 flex flex-wrap gap-2 border-t border-gray-100 pt-3">
+        <a href="{{ route('guru.izin.export', array_merge(request()->query(), ['format' => 'excel'])) }}"
+          class="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">
+          Export Excel
+        </a>
+        <a href="{{ route('guru.izin.export', array_merge(request()->query(), ['format' => 'pdf'])) }}"
+          class="rounded-xl bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-black">
+          Export PDF
+        </a>
+        <p class="self-center text-xs text-gray-500">Export mengikuti filter aktif (kelas, nama/kata kunci, periode, status, tanggal).</p>
       </div>
     </form>
   </div>
