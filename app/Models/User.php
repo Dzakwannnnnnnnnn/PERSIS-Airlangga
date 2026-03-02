@@ -25,6 +25,7 @@ class User extends Authenticatable
         'role',
         'nisn',
         'kelas',
+        'card_uid',
         'nip',
         'is_verified',
     ];

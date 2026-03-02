@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
@@ -25,6 +26,7 @@ class DashboardController extends Controller
         ]);
 
         $sort = request('sort', 'latest');
+        $hasCardUid = Schema::hasColumn('users', 'card_uid');
 
         $users = User::query()
             ->with([
@@ -34,14 +36,18 @@ class DashboardController extends Controller
             ])
             ->where('id', '!=', auth()->id())
             ->whereRaw('LOWER(role) != ?', ['admin'])
-            ->when(request()->filled('q'), function ($query) {
+            ->when(request()->filled('q'), function ($query) use ($hasCardUid) {
                 $term = trim((string) request('q'));
-                $query->where(function ($q) use ($term) {
+                $query->where(function ($q) use ($term, $hasCardUid) {
                     $q->where('name', 'like', "%{$term}%")
                         ->orWhere('email', 'like', "%{$term}%")
                         ->orWhere('nisn', 'like', "%{$term}%")
                         ->orWhere('nip', 'like', "%{$term}%")
                         ->orWhere('kelas', 'like', "%{$term}%");
+
+                    if ($hasCardUid) {
+                        $q->orWhere('card_uid', 'like', "%{$term}%");
+                    }
                 });
             })
             ->when(request()->filled('role'), function ($query) {
@@ -143,22 +149,36 @@ class DashboardController extends Controller
     {
         abort_unless(strtolower((string) auth()->user()->role) === 'admin', 403);
 
-        $request->validate([
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
             'phone' => ['nullable', 'string', 'max:20'],
             'kelas' => ['nullable', 'string', 'max:20'],
-        ]);
+        ];
+
+        $hasCardUid = Schema::hasColumn('users', 'card_uid');
+        if ($hasCardUid) {
+            $rules['card_uid'] = ['nullable', 'string', 'max:100', 'unique:users,card_uid,' . $user->id];
+        }
+
+        $request->validate($rules);
 
         $role = strtolower((string) $user->role);
         $kelas = $role === 'siswa' ? $request->kelas : null;
 
-        $user->update([
+        $payload = [
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
             'kelas' => $kelas,
-        ]);
+        ];
+
+        if ($hasCardUid) {
+            $cardUid = $role === 'siswa' ? trim((string) $request->card_uid) : null;
+            $payload['card_uid'] = $cardUid === '' ? null : $cardUid;
+        }
+
+        $user->update($payload);
 
         return redirect()->route('admin.dashboard')->with('success', 'Data akun ' . $user->name . ' berhasil diperbarui.');
     }

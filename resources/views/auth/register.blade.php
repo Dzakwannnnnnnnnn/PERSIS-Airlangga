@@ -72,6 +72,13 @@
                     </div>
                     <div>
                         <label
+                            class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider ml-3 mb-1">Nomor
+                            Kartu Pelajar</label>
+                        <input type="text" name="card_uid" value="{{ old('card_uid') }}" class="auth-input"
+                            placeholder="Contoh: 04AABB1122">
+                    </div>
+                    <div>
+                        <label
                             class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider ml-3 mb-1">Kelas</label>
                         <select name="kelas" class="auth-input appearance-none cursor-pointer">
                             <option value="">Pilih Kelas</option>
@@ -138,14 +145,26 @@
     const roleSelect = document.getElementById('roleSelect');
     const siswaFields = document.getElementById('siswaSpecificFields');
     const guruFields = document.getElementById('guruSpecificFields');
+    const nisnInput = document.querySelector('input[name="nisn"]');
+    const kelasInput = document.querySelector('select[name="kelas"]');
+    const cardUidInput = document.querySelector('input[name="card_uid"]');
+    const nipInput = document.querySelector('input[name="nip"]');
 
     function syncRoleFields() {
         if (this.value === 'guru') {
             siswaFields.classList.add('hidden');
             guruFields.classList.remove('hidden');
+            nisnInput.required = false;
+            kelasInput.required = false;
+            cardUidInput.required = false;
+            nipInput.required = true;
         } else {
             siswaFields.classList.remove('hidden');
             guruFields.classList.add('hidden');
+            nisnInput.required = true;
+            kelasInput.required = true;
+            cardUidInput.required = true;
+            nipInput.required = false;
         }
     }
 

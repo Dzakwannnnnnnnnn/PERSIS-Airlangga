@@ -39,6 +39,10 @@
           <p class="font-semibold text-gray-900">{{ $user->nisn ?? '-' }}</p>
         </div>
         <div>
+          <p class="text-gray-400 uppercase text-[11px] font-semibold tracking-wider mb-1">No. Kartu Pelajar</p>
+          <p class="font-semibold text-gray-900">{{ $user->card_uid ?? '-' }}</p>
+        </div>
+        <div>
           <p class="text-gray-400 uppercase text-[11px] font-semibold tracking-wider mb-1">NIP</p>
           <p class="font-semibold text-gray-900">{{ $user->nip ?? '-' }}</p>
         </div>

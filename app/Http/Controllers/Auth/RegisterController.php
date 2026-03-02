@@ -30,8 +30,15 @@ class RegisterController extends Controller
 
         // Logika Kondisional: Jika siswa wajib NISN, jika guru wajib NIP
         if ($request->role === 'siswa') {
+            if (!Schema::hasColumn('users', 'card_uid')) {
+                return back()
+                    ->withInput()
+                    ->withErrors(['card_uid' => 'Kolom nomor kartu pelajar belum tersedia di database. Jalankan migrasi terlebih dahulu.']);
+            }
+
             $rules['nisn'] = ['required', 'digits:10', 'unique:users,nisn'];
             $rules['kelas'] = ['required', 'string', 'max:20'];
+            $rules['card_uid'] = ['required', 'string', 'max:100', 'unique:users,card_uid'];
         } else {
             if (!Schema::hasColumn('users', 'nip')) {
                 return back()
@@ -57,6 +64,10 @@ class RegisterController extends Controller
             'kelas' => $role === 'siswa' ? $request->kelas : null,
             'is_verified' => false, // Akun baru statusnya belum terverifikasi
         ];
+
+        if (Schema::hasColumn('users', 'card_uid')) {
+            $payload['card_uid'] = $role === 'siswa' ? trim((string) $request->card_uid) : null;
+        }
 
         if (Schema::hasColumn('users', 'nip')) {
             $payload['nip'] = $role === 'guru' ? $request->nip : null;

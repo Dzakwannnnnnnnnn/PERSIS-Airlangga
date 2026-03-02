@@ -63,6 +63,12 @@
                 @endif
               </select>
             </div>
+            <div>
+              <label class="block mb-2 text-sm font-semibold text-gray-700">Nomor Kartu Pelajar</label>
+              <input type="text" name="card_uid" value="{{ old('card_uid', $user->card_uid) }}"
+                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-blue-100"
+                placeholder="Contoh: 04AABB1122">
+            </div>
           @endif
         </div>
 
