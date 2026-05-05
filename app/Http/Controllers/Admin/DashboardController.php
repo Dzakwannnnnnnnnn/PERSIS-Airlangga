@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
@@ -91,7 +92,42 @@ class DashboardController extends Controller
             'total' => User::whereRaw('LOWER(role) != ?', ['admin'])->count(),
         ];
 
-        return view('admin.dashboard', compact('users', 'counts'));
+        $frontOfficeMode = (bool) config('app.front_office_mode');
+
+        return view('admin.dashboard', compact('users', 'counts', 'frontOfficeMode'));
+    }
+
+    public function toggleFrontOfficeMode(Request $request): RedirectResponse
+    {
+        abort_unless(strtolower((string) auth()->user()->role) === 'admin', 403);
+
+        $request->validate([
+            'enabled' => ['required', 'in:0,1'],
+        ]);
+
+        $enabled = $request->input('enabled') === '1';
+        $envPath = base_path('.env');
+
+        if (!is_file($envPath) || !is_writable($envPath)) {
+            return back()->with('error', 'Gagal mengubah mode front office karena file .env tidak bisa ditulis.');
+        }
+
+        $content = (string) file_get_contents($envPath);
+        $value = $enabled ? 'true' : 'false';
+        $line = 'FRONT_OFFICE_MODE=' . $value;
+
+        if (preg_match('/^FRONT_OFFICE_MODE=.*/m', $content)) {
+            $content = (string) preg_replace('/^FRONT_OFFICE_MODE=.*/m', $line, $content);
+        } else {
+            $content = rtrim($content) . PHP_EOL . $line . PHP_EOL;
+        }
+
+        file_put_contents($envPath, $content);
+
+        // Refresh config agar perubahan env langsung terbaca.
+        Artisan::call('config:clear');
+
+        return back()->with('success', 'Mode front office berhasil ' . ($enabled ? 'diaktifkan' : 'dinonaktifkan') . '.');
     }
 
     /**

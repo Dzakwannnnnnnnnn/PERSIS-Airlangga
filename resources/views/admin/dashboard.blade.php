@@ -36,6 +36,32 @@
       </div>
     @endif
 
+    <div class="ios-card mb-5 p-4">
+      <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div>
+          <p class="text-sm font-semibold text-gray-900">Mode Front Office</p>
+          <p class="text-xs text-gray-500">Izinkan petugas non-siswa untuk akses form pengajuan via tap kartu.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          @if($frontOfficeMode)
+            <span class="inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-700">Aktif</span>
+            <form method="POST" action="{{ route('admin.front-office-mode.toggle') }}">
+              @csrf
+              <input type="hidden" name="enabled" value="0">
+              <button class="rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700">OFF-kan</button>
+            </form>
+          @else
+            <span class="inline-flex rounded-full bg-gray-200 px-3 py-1 text-xs font-bold text-gray-700">Nonaktif</span>
+            <form method="POST" action="{{ route('admin.front-office-mode.toggle') }}">
+              @csrf
+              <input type="hidden" name="enabled" value="1">
+              <button class="rounded-xl bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700">ON-kan</button>
+            </form>
+          @endif
+        </div>
+      </div>
+    </div>
+
     <div class="ios-card p-6 mb-5">
       <form method="GET" action="{{ route('admin.dashboard') }}" class="grid grid-cols-1 md:grid-cols-5 gap-3">
         <div class="md:col-span-2">

@@ -22,6 +22,7 @@ require __DIR__ . '/auth.php';
 // Menambahkan ->name('admin.') supaya pemanggilan route jadi route('admin.dashboard')
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
+    Route::post('/front-office-mode', [AdminDashboard::class, 'toggleFrontOfficeMode'])->name('front-office-mode.toggle');
     Route::post('/verify/{id}', [AdminDashboard::class, 'verify'])->name('verify');
     Route::get('/users/create', [AdminDashboard::class, 'create'])->name('users.create');
     Route::post('/users', [AdminDashboard::class, 'store'])->name('users.store');
